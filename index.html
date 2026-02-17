@@ -76,10 +76,15 @@ const obstacleImg = new Image();
 obstacleImg.src = 'character2.png';  //장애물
         // --- 게임 엔진 변수 ---
         let score = 0;
-        let isJumping = false;
-        let jumpVelocity = 0; 
-        const gravity = 0.38;     // 중력 (낮을수록 천천히 떨어짐)
-        let gameSpeed = 3;      // 장애물 속도 (기본 3)
+let isJumping = false;
+let jumpVelocity = 0;
+const gravity = 0.38;
+
+// 1. 모바일인지 확인하는 코드 (여기에 추가)
+const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
+
+// 2. 기기에 따라 속도 다르게 설정 (여기에 추가)
+let gameSpeed = isMobile ? 5 : 3;
 
         // 🦖 주인공 (설윤)
         const player = {
