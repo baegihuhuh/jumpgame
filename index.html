@@ -150,7 +150,11 @@ obstacleImg.src = 'character2.png';  //장애물
                 isJumping = true;
                 jumpVelocity = 18; // 점프 힘 (클수록 높이 뜀)
             }
-        });
+        });window.addEventListener('touchstart', function(e) {
+    // 터치 시 브라우저 기본 동작(확대 등) 방지
+    // e.preventDefault(); // 필요에 따라 주석 해제
+    jump(); // 기존에 만들어둔 점프 함수 이름이 jump라면 이렇게 호출
+});
 
         update(); // 게임 시작
     </script>
