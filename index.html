@@ -74,17 +74,19 @@ const playerImg = new Image(); //설윤사진 이미지.
 playerImg.src = 'character.png'; // 설윤사진
 const obstacleImg = new Image();
 obstacleImg.src = 'character2.png';  //장애물
-        // --- 게임 엔진 변수 ---
-        let score = 0;
+// --- 게임 엔진 변수 ---
+let score = 0;
 let isJumping = false;
 let jumpVelocity = 0;
-const gravity = 0.38;
 
-// 1. 모바일인지 확인하는 코드 (여기에 추가)
+// 1. 모바일 여부 확인
 const isMobile = /iPhone|iPad|iPod|Android/i.test(navigator.userAgent);
 
-// 2. 기기에 따라 속도 다르게 설정 (여기에 추가)
-let gameSpeed = isMobile ? 5 : 3;
+// 2. 중력 설정: 모바일에서는 더 빨리 떨어지게 (PC: 0.38, 모바일: 0.6)
+const gravity = isMobile ? 0.6 : 0.38;
+
+// 3. 속도 설정: 모바일은 요청하신 대로 8, PC는 기존대로 3
+let gameSpeed = isMobile ? 8 : 3;
 
         // 🦖 주인공 (설윤)
         const player = {
