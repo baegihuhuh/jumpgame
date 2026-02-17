@@ -1,0 +1,158 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+    <meta charset="UTF-8">
+    <title>점프ㅡㅡㅡㅡㅡㅡㅡ그ㅡㅔㅔㅔ에ㅣㅁ</title>
+    <style>
+        body { text-align: center; font-family: 'Arial', sans-serif; background-color: #f0f0f0; margin: 0; padding-top: 50px; }
+        canvas { background-color: white;
+        background-image: url('background.png');
+         border-bottom: 5px solid #333; box-shadow: 0 5px 15px rgba(0,0,0,0.1); }
+        .score { font-size: 30px; font-weight: bold; color: #333; margin: 20px; }
+    </style>
+</head>
+<body>
+
+    <div class="score">점수: <span id="scoreText">0</span>
+    최고점수: <span id="bestScoreText">0</span></div>
+    <button id="pauseBtn" style="margin-left: 200px;">정지</button>
+    <canvas id="gameCanvas" width="800" height="200"></canvas>
+    <p><b>[스페이스바]</b>를 누르면 점프함</p>
+
+    <script>
+        function update() {
+    // [이 코드가 반드시 맨 위에 와야 합니다!]
+    if (isPaused) {
+        return; // 정지 상태면 여기서 바로 함수 종료 (퇴근!)
+    }
+
+    // --- 여기서부터는 기존 코드 ---
+    ctx.clearRect(0, 0, canvas.width, canvas.height);
+    
+    // 캐릭터 이동, 장애물 이동, 그리기 코드들...
+    
+ if (!isPaused) {
+        animationId = requestAnimationFrame(update);
+    }
+}
+        // 1. 게임이 멈췄는지 확인할 스위치 (처음엔 안 멈췄으니까 false)
+let isPaused = false; 
+let animationId;
+
+pauseBtn.addEventListener('click', () => {
+    isPaused = !isPaused; 
+    pauseBtn.blur(); //버튼 클릭후 포커스 없애는거 - 스페이스바 눌러도 안멈춤
+
+    if (isPaused) {
+        pauseBtn.innerText = "재개";
+        // 정지 시: 예약된 다음 프레임을 취소함
+        cancelAnimationFrame(animationId); 
+    } else {
+        pauseBtn.innerText = "정지";
+        // 재개 시: 기존 엔진을 확실히 끄고 딱 하나만 새로 실행
+        cancelAnimationFrame(animationId); 
+        update(); 
+    }
+});
+;
+    
+
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+        const scoreText = document.getElementById('scoreText');
+const playerImg = new Image(); //설윤사진 이미지.
+playerImg.src = 'character.png'; // 설윤사진
+const obstacleImg = new Image();
+obstacleImg.src = 'character2.png';  //장애물
+        // --- 게임 엔진 변수 ---
+        let score = 0;
+        let isJumping = false;
+        let jumpVelocity = 0; 
+        const gravity = 0.38;     // 중력 (낮을수록 천천히 떨어짐)
+        let gameSpeed = 3;      // 장애물 속도 (기본 3)
+
+        // 🦖 주인공 (설윤)
+        const player = {
+            x: 50,
+            y: 125,
+            width: 60,
+            height: 85,
+           draw() {
+    // 기존 사각형 그리기 대신 아래 코드 한 줄로 교체!
+    ctx.drawImage(playerImg, this.x, this.y, this.width, this.height);
+}
+            }
+
+
+        // 🌵 장애물
+        const obstacle = {
+            x: 800,
+            y: 145,
+            width: 40,
+            height: 60,
+            draw() {
+                ctx.fillStyle = '#e74c3c'; // 빨간색
+                ctx.drawImage(obstacleImg, this.x, this.y, this.width, this.height);
+            }
+        };
+
+        function update() {
+            if (isPaused) return;
+            ctx.clearRect(0, 0, canvas.width, canvas.height); // 화면 초기화
+
+            // 점프 계산
+            if (isJumping) {
+                player.y -= jumpVelocity;
+                jumpVelocity -= gravity;
+
+                if (player.y >= 125) {
+                    player.y = 125;
+                    isJumping = false;
+                }
+            }
+
+            // 장애물 이동
+            obstacle.x -= gameSpeed;
+            if (obstacle.x < -30) {
+                obstacle.x = 800;
+                score++;
+                scoreText.innerText = score;
+                gameSpeed += 0.05;   // 장애물 하나 피할 때마다 0.05씩 속도 증가
+            
+            }
+
+            // 충돌 체크 (주인공 몸체와 장애물이 겹치면 게임오버)
+            if (
+                obstacle.x < player.x + player.width -10 &&
+                obstacle.x + obstacle.width > player.x +10 &&
+                player.y + player.height > obstacle.y +10
+            ) {if (score > bestScore) {
+    bestScore = score;
+    localStorage.setItem('bestScore', bestScore);
+}
+                alert("게임 오버! 점수: " + score);
+                score = 0;
+                scoreText.innerText = score;
+                document.getElementById('bestScoreText').innerText = bestScore;
+                obstacle.x = 800;
+                gameSpeed = 3;
+            }
+
+            player.draw();
+            obstacle.draw();
+
+            requestAnimationFrame(update); // 다음 프레임 실행
+        }let bestScore = localStorage.getItem('bestScore') || 0;
+
+        // 키 입력 처리
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' && !isJumping) {
+                isJumping = true;
+                jumpVelocity = 18; // 점프 힘 (클수록 높이 뜀)
+            }
+        });
+
+        update(); // 게임 시작
+    </script>
+</body>
+</html>
